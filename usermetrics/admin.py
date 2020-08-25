@@ -13,5 +13,14 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = CustomUser
     list_display = ['username','email', 'is_active',]
+    actions = ['is_not_active','is_active',]
+
+    def is_not_active(self, request, queryset):
+        queryset.update(is_active=False)
+    is_not_active.short_description = "Deactivate Selected User(s)" 
+
+    def is_active(self, request, queryset):
+        queryset.update(is_active=True)
+    is_active.short_description = "Reactivate Selected User(s)"
 
 admin.site.register(CustomUser, CustomUserAdmin)
