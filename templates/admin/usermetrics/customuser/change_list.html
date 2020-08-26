@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<h1>Custom message!</h1>
+<h1>User Metrics</h1>
 
 <!-- Render the rest of the ChangeList view by calling block.super -->
 {% block extrahead %}
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     data: {
       datasets: [
         {
-          label: 'new users',
+          label: 'new users', 
           data: chartData,
           backgroundColor: 'rgba(220,20,20,0.5)',
         },

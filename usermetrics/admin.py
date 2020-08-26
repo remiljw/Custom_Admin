@@ -19,7 +19,7 @@ class CustomUserAdmin(UserAdmin):
     # add_form = CustomUserCreationForm
     # form = CustomUserChangeForm
     model = CustomUser
-    list_display = ('username','email', 'is_active', 'user_status')
+    list_display = ('username','email', 'is_active',  'date_joined','user_status',)
     ordering=('date_joined',)
     
 
@@ -29,7 +29,7 @@ class CustomUserAdmin(UserAdmin):
             CustomUser.objects.annotate(date=TruncDay("date_joined"))
             .values("date")
             .annotate(y=Count("id"))
-            .order_by("-date")
+            .order_by("date")
         )
 
         # Serialize and attach the chart data to the template context
@@ -42,7 +42,7 @@ class CustomUserAdmin(UserAdmin):
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
-            url(r'^(?P<customuser_id>.+)/change/$', self.is_active, name='change'),
+            url(r'^(?P<customuser_id>.+)/options/$', self.admin_site.admin_view(self.is_active), name='options'),
             path('chart_data/', self.admin_site.admin_view(self.chart_data_endpoint))
         ]
         return custom_urls + urls
@@ -56,15 +56,17 @@ class CustomUserAdmin(UserAdmin):
             CustomUser.objects.annotate(date=TruncDay("date_joined"))
             .values("date")
             .annotate(y=Count("id"))
-            .order_by("-date")
+            .order_by("date")
         )
 
     def user_status(self, obj):
-        return format_html(
-            '<a class="button" href="{}"> Deactivate</a>&nbsp;'
-            '<a class="button" href="{}"> Reactivate</a>',
-            reverse('admin:change', args=[obj.pk]),reverse('admin:change', args=[obj.pk]),
-        )
+        if obj.is_active == True:
+            return format_html('<a class="button" href="{}"> Deactivate</a>',
+            reverse('admin:options', args=[obj.pk]))
+        else:
+            return format_html(
+            '<a class="button" href="{}"> Activate</a>',
+            reverse('admin:options', args=[obj.pk]))
     user_status.allow_tags = True
     user_status.short_description = 'Options'
 
