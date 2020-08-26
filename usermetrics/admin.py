@@ -18,7 +18,9 @@ class CustomUserAdmin(UserAdmin):
     # add_form = CustomUserCreationForm
     # form = CustomUserChangeForm
     model = CustomUser
-    list_display = ('username','email', 'is_active',  'date_joined','user_status',)
+    list_display = ('username','email', 'is_active',  'date_joined','user_status', 'model_action')
+    list_filter=('username', 'email','is_active',)
+    search_fields = ('email', 'username')
     ordering=('date_joined',)
     
 
@@ -57,6 +59,16 @@ class CustomUserAdmin(UserAdmin):
             .annotate(y=Count("id"))
             .order_by("date")
         )
+    
+    def model_action(self, obj):
+        view_name = "admin:{}_{}_delete".format(obj._meta.app_label, obj._meta.model_name)
+        link = reverse(view_name, args=[obj.pk])
+        html = '<a class="button" style="background-color:red" onclick="location.href=\'{}\'" >Delete</a>'.format(link)
+        return format_html(html)
+    model_action.allow_tags = True
+    model_action.short_description = 'Option'
+
+
 
     def user_status(self, obj):
         if obj.is_active == True:
@@ -67,7 +79,7 @@ class CustomUserAdmin(UserAdmin):
             '<a class="button" href="{}"> Activate</a>',
             reverse('admin:options', args=[obj.pk]))
     user_status.allow_tags = True
-    user_status.short_description = 'Options'
+    user_status.short_description = 'Change Status'
 
     def is_active(self, request, customuser_id, *args, **kwrags):
         opt = customuser_id
