@@ -9,7 +9,6 @@ from django.contrib.auth.models import Group
 from django.utils.html import format_html
 from django.urls import reverse, path
 from django.conf.urls import url
-from django.utils.safestring import mark_safe
 from django.http import HttpResponseRedirect, JsonResponse
 # Register your models here. 
 
@@ -79,5 +78,5 @@ class CustomUserAdmin(UserAdmin):
         else:
             user.is_active=True
             user.save()
-        return HttpResponseRedirect(reverse('../'))
+        return HttpResponseRedirect('../../')
 admin.site.register(CustomUser, CustomUserAdmin)
