@@ -1,5 +1,6 @@
 import json
 from django.contrib import admin
+from .forms import SendEmailForm
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
 from django.core.serializers.json import DjangoJSONEncoder
@@ -9,19 +10,22 @@ from django.contrib.auth.models import Group
 from django.utils.html import format_html
 from django.urls import reverse, path
 from django.conf.urls import url
+from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 # Register your models here. 
 
 admin.site.unregister(Group)
+admin.site.site_header = "UserMetrics Admin"
+admin.site.site_title = "UserMetrics Admin Portal"
+admin.site.index_title = "Welcome to Savests UserMetrics "
 
 class CustomUserAdmin(UserAdmin):    
-    # add_form = CustomUserCreationForm
-    # form = CustomUserChangeForm
     model = CustomUser
     list_display = ('username','email', 'is_active',  'date_joined','user_status', 'model_action')
-    list_filter=('username', 'email','is_active',)
+    list_filter=('is_staff', 'is_superuser','is_active',)
     search_fields = ('email', 'username')
     ordering=('date_joined',)
+    actions = ['send_EMAIL']
     
 
     def changelist_view(self, request, extra_context=None):
@@ -44,7 +48,8 @@ class CustomUserAdmin(UserAdmin):
         urls = super().get_urls()
         custom_urls = [
             url(r'^(?P<customuser_id>.+)/options/$', self.admin_site.admin_view(self.is_active), name='options'),
-            path('chart_data/', self.admin_site.admin_view(self.chart_data_endpoint))
+            path('chart_data/', self.admin_site.admin_view(self.chart_data_endpoint)),
+            
         ]
         return custom_urls + urls
 
@@ -69,6 +74,9 @@ class CustomUserAdmin(UserAdmin):
     model_action.short_description = 'Option'
 
 
+    def send_EMAIL(self, request, queryset):
+        form = SendEmailForm(initial={'customusers': queryset})
+        return render(request, 'admin/send_email.html', {'form': form})
 
     def user_status(self, obj):
         if obj.is_active == True:
