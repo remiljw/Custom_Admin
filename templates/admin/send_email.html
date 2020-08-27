@@ -15,7 +15,7 @@
 
 {% block content %}
 <p>{% blocktrans %}Write your message here{% endblocktrans %}</p>
-<form method="POST" action="{% url 'email' %}">{% csrf_token %}
+<form method="POST" action="{% url 'admin:email' %}">{% csrf_token %}
     <div>
         <div>
             <p>{{ form.customusers.errors }}</p>
@@ -41,7 +41,7 @@
             <p>{{ form.message.label_tag }}</p>
             <p>{{ form.message }}</p>
         </div>
-        <input type="submit" value="{% trans 'Send message' %}" />
+        <input type="submit" value="{% trans 'Send Mail' %}" />
         <a href="{% url 'admin:usermetrics_customuser_changelist' %}" class="button cancel-link">{% trans "No, take me back" %}</a>
     </div>
 </form>

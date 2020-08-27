@@ -8,10 +8,12 @@ from django.db.models import Count
 from django.db.models.functions import TruncDay
 from django.contrib.auth.models import Group
 from django.utils.html import format_html
-from django.urls import reverse, path
+from django.urls import reverse
 from django.conf.urls import url
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
+from .views import SendUserEmailsView
+
 # Register your models here. 
 
 admin.site.unregister(Group)
@@ -48,7 +50,8 @@ class CustomUserAdmin(UserAdmin):
         urls = super().get_urls()
         custom_urls = [
             url(r'^(?P<customuser_id>.+)/options/$', self.admin_site.admin_view(self.is_active), name='options'),
-            path('chart_data/', self.admin_site.admin_view(self.chart_data_endpoint)),
+            url(r'^chart_data/$', self.admin_site.admin_view(self.chart_data_endpoint)),
+            url(r'^email-users/$', view=SendUserEmailsView.as_view(), name='email')
             
         ]
         return custom_urls + urls

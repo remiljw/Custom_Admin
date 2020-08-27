@@ -14,11 +14,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
-from usermetrics.views import SendUserEmailsView
-from django.conf.urls import url
+from django.urls import path
+
 
 urlpatterns = [
     path('', admin.site.urls),
-    url(r'^email-users/$', view=SendUserEmailsView.as_view(), name='email')
 ]

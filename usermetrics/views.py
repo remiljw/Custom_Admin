@@ -3,8 +3,8 @@ from django.contrib import messages
 from .forms import SendEmailForm
 from .models import CustomUser
 from django.views.generic.edit import FormView
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.mail import send_mail
 # Create your views here.
 
 
@@ -20,10 +20,10 @@ class SendUserEmailsView(IsStaffMixin, FormView):
 
     
     def form_valid(self, form):
-        users = form.cleaned_data['customusers']
+        customusers = form.cleaned_data['customusers']
         subject = form.cleaned_data['subject']
         message = form.cleaned_data['message']
-        email_users.delay(users, subject, message)
+        send_mail(subject, message, self.request.user.email, customusers)
         user_message = '{0} users emailed successfully!'.format(form.cleaned_data['customusers'].count())
         messages.success(self.request, user_message)
-        return super(SendUserEmails, self).form_valid(form)
+        return super(SendUserEmailsView, self).form_valid(form)
