@@ -27,7 +27,7 @@ class CustomUserAdmin(UserAdmin):
     list_filter=('is_staff', 'is_superuser','is_active',)
     search_fields = ('email', 'username')
     ordering=('date_joined',)
-    actions = ['send_EMAIL']
+    actions = ['send_email']
     
 
     def changelist_view(self, request, extra_context=None):
@@ -51,7 +51,8 @@ class CustomUserAdmin(UserAdmin):
         custom_urls = [
             url(r'^(?P<customuser_id>.+)/options/$', self.admin_site.admin_view(self.is_active), name='options'),
             url(r'^chart_data/$', self.admin_site.admin_view(self.chart_data_endpoint)),
-            url(r'^email-users/$', view=SendUserEmailsView.as_view(), name='email')
+            url(r'^email-users/$', view=SendUserEmailsView.as_view(), name='email'),
+            url(r'^mail-action/$', self.mailaction, name='mailusers')
             
         ]
         return custom_urls + urls
@@ -77,7 +78,14 @@ class CustomUserAdmin(UserAdmin):
     model_action.short_description = 'Option'
 
 
-    def send_EMAIL(self, request, queryset):
+    def send_email(self, request, queryset):
+        form = SendEmailForm(initial={'customusers': queryset})
+        return render(request, 'admin/send_email.html', {'form': form})
+    send_email.allow_tags = True
+    send_email.short_description = 'Mail Selected Users'
+
+    def mailaction(self, request):
+        queryset = self.model.objects.all()
         form = SendEmailForm(initial={'customusers': queryset})
         return render(request, 'admin/send_email.html', {'form': form})
 

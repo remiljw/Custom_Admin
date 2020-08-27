@@ -77,7 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
 <div style="width: 80%;">
   <canvas style="margin-bottom: 30px; width: 60%; height: 50%;" id="myChart"></canvas>
 </div>
-<button id="reload" style="margin: 1rem 0">Reload chart data</button>
+<input id="reload" type="submit" style="margin: 1rem 0" value="Reload chart data"/>
+<a class="button" href="{% url 'admin:mailusers' %}"> Mail all Users</a>',
 <!-- Render the rest of the ChangeList view -->
 {{ block.super }}
 {% endblock %}
